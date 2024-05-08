@@ -18,6 +18,16 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+		// テクスチャ読み込み
+	textureHandle_ = TextureManager::Load("mario.png");
+	// スプライト読み込み
+	//sprite_ = Sprite::Create(textureHandle_, {100, 50});
+	model_ = Model::Create();
+
+	worldTransform_.Initialize();
+	viewProjection_.Initialize();
+	soundHandle_ = audio_->LoadWave("./Resources/fanfare.wav");
 }
 
 void GameScene::Update() {}

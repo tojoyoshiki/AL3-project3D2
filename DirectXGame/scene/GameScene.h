@@ -9,6 +9,7 @@
 #include "WorldTransform.h"
 #include "ImGuiManager.h"
 #include "DebugCamera.h"
+#include "Player.h"
 
 /// <summary>
 /// ゲームシーン
@@ -52,9 +53,11 @@ private: // メンバ変数
 	/// 
 	uint32_t textureHandle_ = 0;
 	Model* model_ = nullptr;
-	Sprite* sprite_ = nullptr;
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
+	Player* player = 0;
+
+	Sprite* sprite_ = nullptr;
 	uint32_t soundHandle_ = 0;
 	uint32_t voiceHandle_ = 0;
 	DebugCamera* debugCamera_ = nullptr;
