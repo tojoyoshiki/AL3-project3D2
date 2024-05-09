@@ -5,34 +5,45 @@
 #include "PrimitiveDrawer.h"
 #include "AxisIndicator.h"
 
-GameScene::GameScene() {}
+GameScene::GameScene() {
+}
 
 GameScene::~GameScene() {
 	delete sprite_;
 	delete model_;
 	delete debugCamera_;
+
+	delete player_;
 }
 
 void GameScene::Initialize() {
+
+	player_ = new Player();
+	player_->Initialize(model_, textureHandle_,&viewProjection_);
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-		// テクスチャ読み込み
+	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("mario.png");
 	// スプライト読み込み
-	//sprite_ = Sprite::Create(textureHandle_, {100, 50});
-	model_ = Model::Create();
+	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 
 	worldTransform_.Initialize();
 	viewProjection_.Initialize();
-	soundHandle_ = audio_->LoadWave("./Resources/fanfare.wav");
+	//soundHandle_ = audio_->LoadWave("./Resources/fanfare.wav");
 }
 
-void GameScene::Update() {}
+void GameScene::Update() { 
+
+	player_->Update(); 
+
+}
 
 void GameScene::Draw() {
+
+	player_->Draw();
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
