@@ -1,4 +1,5 @@
 #pragma once
+#include<cassert>
 #include "Model.h"
 #include "WorldTransform.h"
 #include "ViewProjection.h"
