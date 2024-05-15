@@ -23,8 +23,8 @@ class Player {
 	void Draw();
 
 	private:
-	uint32_t textureHandle_ = 0u;
+	uint32_t textureHandle_ = 0;
 	Model* model_ = nullptr;
 	WorldTransform worldTransform_;
-	ViewProjection* viewProjection_ = nullptr;
+	ViewProjection* viewProjection_;
 };

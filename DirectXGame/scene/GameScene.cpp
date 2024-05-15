@@ -18,21 +18,23 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-	player_ = new Player();
-	player_->Initialize(model_, textureHandle_,&viewProjection_);
-
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
 	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("mario.png");
+
+	model_ = Model::Create();
+	worldTransform_.Initialize();
+	viewProjection_.Initialize();
+
 	// スプライト読み込み
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 
-	worldTransform_.Initialize();
-	viewProjection_.Initialize();
-	//soundHandle_ = audio_->LoadWave("./Resources/fanfare.wav");
+	player_ = new Player();
+	player_->Initialize(model_,textureHandle_,&viewProjection_);
+	// soundHandle_ = audio_->LoadWave("./Resources/fanfare.wav");
 }
 
 void GameScene::Update() { 
@@ -42,8 +44,6 @@ void GameScene::Update() {
 }
 
 void GameScene::Draw() {
-
-	player_->Draw();
 
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
@@ -69,7 +69,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-
+	player_->Draw();
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
