@@ -1,19 +1,47 @@
 #include "GameScene.h"
+#include "Skydome.h"
 #include "TextureManager.h"
 #include <cassert>
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() {
+
+	for (WorldTransform* worldTransformBlock : worldTransformBlocks_) {
+		delete worldTransformBlock;
+	}
+	worldTransformBlocks_.clear();
+}
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	const uint32_t kNumBlocksHorizontal = 20;
+	const float kBlockWidth = 2.0f;
+	worldTransformBlocks_.resize(kNumBlocksHorizontal);
+
+	for (uint32_t i = 0; i < kNumBlocksHorizontal; ++i) {
+		worldTransformBlocks_[i] = new WorldTransform();
+		worldTransformBlocks_[i]->Initialize();
+		worldTransformBlocks_[i]->translation_.x = kBlockWidth * i;
+		worldTransformBlocks_[i]->translation_.y = 0.0f;
+	}
+
+	Model* modelskydome_ = nullptr;
+	modelSkydome_ = Model* : CreateFromOBJ("sphere", true);
+	delete modelSkydome_;
 }
 
-void GameScene::Update() {}
+void GameScene::Update() {
+
+	for (WorldTransform* worldTransformBlock : 
+		worldTransformBlocks_) {
+	
+	}
+}
 
 void GameScene::Draw() {
 
@@ -59,4 +87,3 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
- 
