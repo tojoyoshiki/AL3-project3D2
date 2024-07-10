@@ -1,15 +1,16 @@
 #pragma once
 
 #include "Audio.h"
+#include "DebugCamera.h"
 #include "DirectXCommon.h"
+#include "GameScene.h"
 #include "Input.h"
 #include "Model.h"
+#include "Player.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "ImGuiManager.h"
-#include "DebugCamera.h"
-#include "Player.h"
+#include <vector>
 
 /// <summary>
 /// ゲームシーン
@@ -17,6 +18,9 @@
 class GameScene {
 
 public: // メンバ関数
+	Sprite* sprite_ = nullptr;
+	bool isDebugCameraActive_ = false;
+
 	/// <summary>
 	/// コンストクラタ
 	/// </summary>
@@ -46,23 +50,21 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
+	uint32_t textureHandle_ = 0;
 
 	Player* player_ = nullptr;
+
+	Model* modelBlock_ = nullptr;
+
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+	Model* model_ = nullptr;
+
+	ViewProjection viewProjection_;
+
+	DebugCamera* debugCamera_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	/// 
-	uint32_t textureHandle_ = 0;
-	Model* model_ = nullptr;
-	WorldTransform worldTransform_;
-	ViewProjection viewProjection_;
-	Player* player = 0;
-
-	Sprite* sprite_ = nullptr;
-	uint32_t soundHandle_ = 0;
-	uint32_t voiceHandle_ = 0;
-	DebugCamera* debugCamera_ = nullptr;
-
-	float inputFloat3[3] = {0, 0, 0};
 };

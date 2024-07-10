@@ -1,19 +1,25 @@
 #include "GameScene.h"
+#include "MathUtilityForText.h"
+#include "Model.h"
 #include "TextureManager.h"
+#include "WorldTransform.h"
 #include <cassert>
-#include "ImGuiManager.h"
-#include "PrimitiveDrawer.h"
-#include "AxisIndicator.h"
 
-GameScene::GameScene() {
-}
+GameScene::GameScene() {}
 
+// デストラクタ
 GameScene::~GameScene() {
 	delete sprite_;
 	delete model_;
+	delete modelBlock_;
 	delete debugCamera_;
 
-	delete player_;
+	for (std::vector<WorldTransform*>& worldTransformBlocksLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlocksLine) {
+			delete worldTransformBlock;
+		}
+	}
+	worldTransformBlocks_.clear();
 }
 
 void GameScene::Initialize() {
@@ -22,25 +28,81 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("mario.png");
-
-	model_ = Model::Create();
-	worldTransform_.Initialize();
-	viewProjection_.Initialize();
-
-	// スプライト読み込み
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 
 	player_ = new Player();
-	player_->Initialize(model_,textureHandle_,&viewProjection_);
-	// soundHandle_ = audio_->LoadWave("./Resources/fanfare.wav");
+
+	model_ = Model::Create();
+
+	viewProjection_.Initialize();
+
+	player_->Initialize(model_, textureHandle_, &viewProjection_);
+
+	modelBlock_ = Model::CreateFromOBJ("cube");
+
+	const uint32_t kNumBlockVirtical = 10;
+	const uint32_t kNumBlockHorizontal = 20;
+
+	const float kBlockWodth = 2.0f;
+	const float kBlockHeight = 2.0f;
+
+	worldTransformBlocks_.resize(kNumBlockVirtical);
+
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+			if ((i + j) % 2 == 0)
+
+				continue;
+			worldTransformBlocks_[i][j] = new WorldTransform();
+			worldTransformBlocks_[i][j]->Initialize();
+			worldTransformBlocks_[i][j]->translation_.x = kBlockWodth * j;
+			worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
+		}
+	}
+
+	debugCamera_ = new DebugCamera(kNumBlockHorizontal, kNumBlockVirtical);
 }
 
-void GameScene::Update() { 
+void GameScene::Update() {
+	Vector2 position = sprite_->GetPosition();
+	position.x += 2.0f;
+	position.y += 1.0f;
+	sprite_->SetPosition(position);
 
-	player_->Update(); 
+	player_->Update();
+	debugCamera_->Update();
 
+	for (std::vector<WorldTransform*>& worldTransformBlocksLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlocksLine) {
+			if (!worldTransformBlock)
+				continue;
+			Matrix4x4 matWorld = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
+
+			worldTransformBlock->matWorld_ = matWorld;
+
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_D)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+#endif // _DEBUG
+	if (isDebugCameraActive_) {
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
 }
 
 void GameScene::Draw() {
@@ -66,10 +128,22 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
+	// sprite_->Draw();
+	player_->Draw();
+
+	for (std::vector<WorldTransform*>& worldTransformBlocksLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlocksLine) {
+			if (!worldTransformBlock)
+				continue;
+
+			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+		}
+	}
+
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	player_->Draw();
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
