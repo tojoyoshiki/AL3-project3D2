@@ -1,5 +1,4 @@
 #include "GameScene.h"
-#include "MathUtilityForText.h"
 #include "Model.h"
 #include "TextureManager.h"
 #include "WorldTransform.h"
@@ -10,9 +9,11 @@ GameScene::GameScene() {}
 // デストラクタ
 GameScene::~GameScene() {
 	delete sprite_;
+	delete player_;
 	delete model_;
 	delete modelBlock_;
 	delete debugCamera_;
+	delete modelSkydome_;
 
 	for (std::vector<WorldTransform*>& worldTransformBlocksLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlocksLine) {
@@ -28,18 +29,34 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	textureHandle_ = TextureManager::Load("mario.png");
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 
+	// 自キャラの生成
 	player_ = new Player();
 
-	model_ = Model::Create();
+	// スカイドームの生成
+	skydome_ = new Skydome();
 
+	model_ = Model::CreateFromOBJ("player", true);
+
+	// 3Dモデルの生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
+	// ビュープロジェクションの初期化
+	viewProjection_.farZ;
 	viewProjection_.Initialize();
 
-	player_->Initialize(model_, textureHandle_, &viewProjection_);
+	// 自キャラの初期化
+	player_->Initialize(model_, &viewProjection_);
 
-	modelBlock_ = Model::CreateFromOBJ("cube");
+	// スカイドームの初期化
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
+
+	// 3Dモデルの生成(block)
+	modelBlock_ = Model::CreateFromOBJ("block");
+
+	// 3Dモデルの生成(skydome)
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	const uint32_t kNumBlockVirtical = 10;
 	const uint32_t kNumBlockHorizontal = 20;
@@ -75,26 +92,35 @@ void GameScene::Update() {
 	position.y += 1.0f;
 	sprite_->SetPosition(position);
 
+	// 自キャラの更新
 	player_->Update();
+	skydome_->Update();
+
 	debugCamera_->Update();
 
 	for (std::vector<WorldTransform*>& worldTransformBlocksLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlocksLine) {
 			if (!worldTransformBlock)
-				continue;
-			Matrix4x4 matWorld = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
 
-			worldTransformBlock->matWorld_ = matWorld;
+				continue;
+
+			// 平行移動
+			Matrix4x4 result{
+			    1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, worldTransformBlock->translation_.x, worldTransformBlock->translation_.y, worldTransformBlock->translation_.z,
+			    1.0f};
+
+			worldTransformBlock->matWorld_ = result;
 
 			worldTransformBlock->UpdateMatrix();
 		}
 	}
 
 #ifdef _DEBUG
-	if (input_->TriggerKey(DIK_D)) {
+	if (input_->TriggerKey(DIK_SPACE)) {
 		isDebugCameraActive_ = !isDebugCameraActive_;
 	}
 #endif // _DEBUG
+
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
@@ -129,13 +155,15 @@ void GameScene::Draw() {
 	Model::PreDraw(commandList);
 
 	// sprite_->Draw();
+	// 自キャラの描画
 	player_->Draw();
+	// スカイドームの描画
+	skydome_->Draw();
 
 	for (std::vector<WorldTransform*>& worldTransformBlocksLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlocksLine) {
 			if (!worldTransformBlock)
 				continue;
-
 			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
