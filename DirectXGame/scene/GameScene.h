@@ -5,6 +5,7 @@
 #include "DirectXCommon.h"
 #include "GameScene.h"
 #include "Input.h"
+#include "MapChipField.h"
 #include "Model.h"
 #include "Player.h"
 #include "Skydome.h"
@@ -47,6 +48,8 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void GenerateBlocks();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -69,6 +72,9 @@ private: // メンバ変数
 
 	// 3Dモデル
 	Model* modelSkydome_ = nullptr;
+
+	// マップチップフィールド
+	MapChipField* mapChipField_;
 
 	/// <summary>
 	/// ゲームシーン用
