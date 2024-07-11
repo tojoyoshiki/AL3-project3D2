@@ -48,7 +48,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	// 自キャラの初期化
-	// player_->Initialize(model_, &viewProjection_);
+	// player_->Initialize(model_, &viewProjection_,position);
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
 	player_->Initialize(model_, &viewProjection_, playerPosition);
@@ -67,6 +67,7 @@ void GameScene::Initialize() {
 
 	GenerateBlocks();
 
+	// ブロックの表示される数字
 	const uint32_t kNumBlockVirtical = 20;
 	const uint32_t kNumBlockHorizontal = 100;
 
