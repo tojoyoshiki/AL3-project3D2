@@ -4,6 +4,7 @@
 #include "CameraController.h"
 #include "DebugCamera.h"
 #include "DirectXCommon.h"
+#include "Enemy.h"
 #include "Input.h"
 #include "MapChipField.h"
 #include "Model.h"
@@ -59,11 +60,16 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 	// 天球
 	Skydome* skydome_ = nullptr;
-	// 3Dモデル
 	Model* modelSkydome_ = nullptr;
 	// 自キャラ
 	Player* player_ = nullptr;
 	Model* modelPlayer_ = nullptr;
+
+	// 敵
+	Enemy* enemy_ = nullptr;
+	Model* modelEnemy_ = nullptr;
+
+	// マップチップフィールド
 	MapChipField* mapChipField_;
 	// カメラコントローラ
 	CameraController* cameraController_ = nullptr;
