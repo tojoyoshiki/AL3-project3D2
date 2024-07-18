@@ -1,22 +1,26 @@
-#pragma once
 #include "Model.h"
+#include "ViewProjection.h"
 #include "WorldTransform.h"
-
+#include <cassert>
+#pragma once
+/// <summary>
+///
+/// </summary>
 class Skydome {
 public:
-	//<summary>
-	// 初期化
-	//</summary>
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize(Model* model, ViewProjection* viewProjection);
 
-	//<summary>
-	// 更新
-	//</summary>
+	/// <summary>
+	/// 更新
+	/// </summary>
 	void Update();
 
-	//<summary>
-	// 描画
-	//</summary>
+	/// <summary>
+	/// 描画
+	/// </summary>
 	void Draw();
 
 private:
@@ -24,9 +28,6 @@ private:
 	WorldTransform worldTransform_;
 	// モデル
 	Model* model_ = nullptr;
-
-	Model* modelSkydome_ = nullptr;
-	// テクスチャハンドル
-
-	ViewProjection* viewProjection_ = nullptr;
+	// ビュープロジェクション
+	ViewProjection* viewProjection_;
 };
