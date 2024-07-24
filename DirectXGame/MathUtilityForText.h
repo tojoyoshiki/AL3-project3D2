@@ -2,6 +2,7 @@
 #include "Matrix4x4.h"
 #include "Vector3.h"
 #include <cmath>
+#include <assert.h>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -25,6 +26,8 @@ double easeInOutSine(double x);
 // 加算
 Vector3 Add(const Vector3& v1, const Vector3& v2);
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);
+
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
 
 // スカラー倍
 Vector3 Multiply(float scalar, const Vector3& v);

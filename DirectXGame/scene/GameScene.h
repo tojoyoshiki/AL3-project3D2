@@ -1,20 +1,21 @@
 #pragma once
 
 #include "Audio.h"
-#include "CameraController.h"
-#include "DebugCamera.h"
 #include "DirectXCommon.h"
-#include "Enemy.h"
 #include "Input.h"
-#include "MapChipField.h"
 #include "Model.h"
-#include "Player.h"
-#include "Skydome.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "MathUtilityForText.h"
 #include <vector>
+#include "DebugCamera.h"
+#include "MathUtilityForText.h"
+#include "Skydome.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "MapChipField.h"
+#include "CameraController.h"
+#include "DeathParticles.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -48,10 +49,10 @@ public: // メンバ関数
 
 	void GenerateBlocks();
 
-	// 全ての当たり判定を行う
+	//全ての当たり判定を行う
 	void CheckAllCollisions();
 
-private:
+private: 
 	// メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -70,14 +71,17 @@ private:
 	Player* player_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 
-	// 敵
+	//敵
 	std::list<Enemy*> enemies_;
 	Model* modelEnemy_ = nullptr;
-	// 発生させる数
-
-	// マップチップフィールド
+	
+	//パーティクル
+	DeathParticles* deathParticles_ = nullptr;
+	Model* modelParticles_ = nullptr;
+	
+	//マップチップフィールド
 	MapChipField* mapChipField_;
-	// カメラコントローラ
+	//カメラコントローラ
 	CameraController* cameraController_ = nullptr;
 	CameraController::Rect movableArea = {0, 100, 0, 100};
 	/// <summary>

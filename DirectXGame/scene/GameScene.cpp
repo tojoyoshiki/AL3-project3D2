@@ -21,6 +21,8 @@ GameScene::~GameScene() {
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
 	}
+	delete modelParticles_;
+	delete deathParticles_;
 	delete modelSkydome_;
 	delete player_;
 	delete skydome_;
@@ -48,15 +50,22 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
-	// 敵モデル
+	//敵モデル
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
-	// 敵の生成
+	//敵の生成
 	for (int32_t i = 0; i < 1; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(10 + i * 3, 18);
 		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}
+
+	//パーティクルモデル
+	modelParticles_ = Model::CreateFromOBJ("deathParticle", true);
+	//仮の生成
+	deathParticles_ = new DeathParticles;
+	deathParticles_->Initialize(modelParticles_, &viewProjection_, playerPosition);
+
 	//  3Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	// 天球の生成
@@ -75,7 +84,7 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
 	*/
-	// 全ての当たり判定を行う
+	//全ての当たり判定を行う
 	CheckAllCollisions();
 }
 
@@ -119,11 +128,14 @@ void GameScene::Update() {
 	skydome_->Update();
 	// 自キャラの更新
 	player_->Update();
-	// 敵の更新
+	// パーティクルの更新
+	if (deathParticles_) {
+		deathParticles_->Update();
+	}
+	//敵の更新
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 	}
-
 	// カメラコントローラの更新
 	cameraController_->Update();
 }
@@ -166,9 +178,13 @@ void GameScene::Draw() {
 	skydome_->Draw();
 	// 自キャラの描画
 	player_->Draw();
-	// 敵の描画
+	//敵の描画
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
+	}
+	//パーティクル描画
+	if (deathParticles_) {
+		deathParticles_->Draw();
 	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -213,22 +229,22 @@ void GameScene::GenerateBlocks() {
 	}
 }
 
-// 全ての当たり判定
+//全ての当たり判定
 void GameScene::CheckAllCollisions() {
-#pragma region 自キャラと敵キャラの当たり判定
-	// 判定対象1と2の座標
-	AABB aabb1, aabb2;
-	// 自キャラの座標
-	aabb1 = player_->GetAABB();
-	// 自キャラと敵弾全ての当たり判定
+	#pragma region 自キャラと敵キャラの当たり判定
+	//判定対象1と2の座標
+	AABB aabb1,aabb2;
+	//自キャラの座標
+    aabb1 = player_->GetAABB();
+	//自キャラと敵弾全ての当たり判定
 	for (Enemy* enemy : enemies_) {
-		/// 敵弾の座標
+		///敵弾の座標
 		aabb2 = enemy->GetAABB();
 		if (AABB::IsCollision(aabb1, aabb2)) {
-			// 自キャラの衝突時コールバックを呼び出す
+			//自キャラの衝突時コールバックを呼び出す
 			player_->OnCollision(enemy);
 			enemy->OnCollision(player_);
 		}
 	}
-#pragma endregion
+	#pragma endregion
 }

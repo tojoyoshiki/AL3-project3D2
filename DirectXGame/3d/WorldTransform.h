@@ -45,18 +45,16 @@ public:
 	/// <summary>
 	/// 行列を転送する
 	/// </summary>
-
-	//void UpdateMatrix();
-
-	void UpdateMatrix();
-
 	void TransferMatrix();
 	/// <summary>
 	/// 定数バッファの取得
 	/// </summary>
-	
 	/// <returns>定数バッファ</returns>
 	const Microsoft::WRL::ComPtr<ID3D12Resource>& GetConstBuffer() const { return constBuffer_; }
+
+	/// 行列を計算・転送する
+	/// </summary>
+	void UpdateMatrix();
 
 private:
 	// 定数バッファ
