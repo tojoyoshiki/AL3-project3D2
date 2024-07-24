@@ -1,24 +1,31 @@
 #pragma once
 
 #include "Audio.h"
+#include "CameraController.h"
+#include "DeathParticles.h"
+#include "DebugCamera.h"
 #include "DirectXCommon.h"
+#include "Enemy.h"
 #include "Input.h"
+#include "MapChipField.h"
 #include "Model.h"
+#include "Player.h"
+#include "Skydome.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include <vector>
-#include "DebugCamera.h"
 #include "MathUtilityForText.h"
-#include "Skydome.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "MapChipField.h"
-#include "CameraController.h"
-#include "DeathParticles.h"
+#include <vector>
 /// <summary>
 /// ゲームシーン
 /// </summary>
+
+// ゲームのフェーズ(型)
+enum class Phase {
+	kPlay,  // ゲームプレイ
+	kDeath, // デス演出
+};
+
 class GameScene {
 
 public: // メンバ関数
@@ -49,10 +56,16 @@ public: // メンバ関数
 
 	void GenerateBlocks();
 
-	//全ての当たり判定を行う
+	// 全ての当たり判定を行う
 	void CheckAllCollisions();
 
-private: 
+	// フェーズの切り替え
+	void ChangePhase();
+
+	// デスフラグのgetter
+	bool IsFinished() const { return finished_; }
+
+private:
 	// メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -71,19 +84,26 @@ private:
 	Player* player_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 
-	//敵
+	// 敵
 	std::list<Enemy*> enemies_;
 	Model* modelEnemy_ = nullptr;
-	
-	//パーティクル
+
+	// パーティクル
 	DeathParticles* deathParticles_ = nullptr;
 	Model* modelParticles_ = nullptr;
-	
-	//マップチップフィールド
+
+	// マップチップフィールド
 	MapChipField* mapChipField_;
-	//カメラコントローラ
+	// カメラコントローラ
 	CameraController* cameraController_ = nullptr;
 	CameraController::Rect movableArea = {0, 100, 0, 100};
+
+	// ゲームの現在フェーズ(変数)
+	Phase phase_;
+
+	// 終了フラグ
+	bool finished_ = false;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
