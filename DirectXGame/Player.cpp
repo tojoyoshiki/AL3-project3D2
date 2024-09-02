@@ -30,6 +30,7 @@ void Player::Update() {
 	ResultMove(collisionMapInfo);
 
 	CeilingHit(collisionMapInfo);
+	CeilingHit(collisionMapInfo);
 
 	// 接地判定
 	OnGround(collisionMapInfo);

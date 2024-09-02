@@ -24,9 +24,9 @@ public:
 
 private:
 	// 最初の角度[度]
-	static inline const float kWalkMotionAngleStart = 5.0f;
+	static inline const float kWalkMotionAngleStart = 0.0f;
 	// 最後の角度[度]
-	static inline const float kWalkMotionAngleEnd = -5.0f;
+	static inline const float kWalkMotionAngleEnd = 0.0f;
 	// アニメーションの周期となる時間[秒]
 	static inline const float kWalklMotionTime = 1.0f;
 	// タイマー
